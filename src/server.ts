@@ -15,15 +15,19 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
 
   app.get('/filteredimage', async (req: Request, res: Response) => {
     const { image_url } = req.query;
-    const pathToImage = await filterImageFromURL(image_url);
-
-    res.sendFile(pathToImage, (err) => {
-      if(err) {
-        console.error(err);
-        res.status(404).send(err)
-      }
-      deleteLocalFiles([pathToImage])
-    })
+    try {
+      const pathToImage = await filterImageFromURL(image_url);
+      res.sendFile(pathToImage, (err) => {
+        if (err) {
+          console.error(err);
+          res.status(404).send(err)
+        }
+        deleteLocalFiles([pathToImage])
+      })
+    } catch (err) {
+      console.error(err)
+      res.status(400).send("Error trying to filter your image, try with a valid url.");
+    }
   })
 
   // Root Endpoint
